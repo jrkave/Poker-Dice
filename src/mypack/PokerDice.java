@@ -18,7 +18,7 @@ public class PokerDice {
     // Constants for scoring categories
     private final static int FIVE_OF_A_KIND = 50;
     private final static int FOUR_OF_A_KIND = 40;
-    private final static int THREE_OF_A_KIND = 30;
+    private final static int THREE_OF_A_KIND = 25;
     private final static int FULL_HOUSE = 35;
     private final static int SMALL_STRAIGHT = 30;
     private final static int LARGE_STRAIGHT = 45;
@@ -51,7 +51,7 @@ public class PokerDice {
     }
 
     public boolean okToRoll() {
-        if (rounds < 3) {
+        if (rolls < 3) {
             return true;
         }
         return false;
@@ -100,7 +100,6 @@ public class PokerDice {
     
     // Helper Methods
     private void tallyDice() {
-    	
     	// Clear the HashMap
     	tally.clear();
     	
@@ -147,13 +146,30 @@ public class PokerDice {
     	// Invoke tallyDice() method
     	tallyDice();
     	
-    	// Check for straights
-    	for (int i = 0; i < tally.size(); i++) {
-    		if (tally.get(i) == length) {
-    			return true;
-    		}
-    	}
-    	return false;
+		int longestConsecutiveLength = 1;
+		boolean lastValue = false;
+
+		if (tally.get(1) >= 1) {
+			lastValue = true;
+		}
+
+		for (int i = 1; i < tally.size(); i++) {
+			if (tally.get(i+1) >= 1 && lastValue == true) {
+				longestConsecutiveLength++;
+			}
+
+			if (tally.get(i+1) >= 1) {
+				lastValue = true;
+			}
+			else {
+				lastValue = false;
+			}
+		}
+
+		if (longestConsecutiveLength == length) {
+			return true;
+		}
+		return false;
     }
     
     private boolean hasMultiples(int count) {
@@ -162,7 +178,7 @@ public class PokerDice {
     	
     	// Return true if there are count or more identical values
     	for (int i = 0; i < tally.size(); i++) {
-    		if (tally.get(i) >= count) {
+    		if (tally.get(i+1) >= count) {
     			return true;
     		}
     	}
@@ -176,7 +192,7 @@ public class PokerDice {
     	
     	// Return true if pair is found
     	for (int i = 0; i < tally.size(); i++) {
-    		if (tally.get(i) == 2) {
+    		if (tally.get(i+1) == 2) {
     			return true;
     		}
     	}
@@ -232,6 +248,9 @@ public class PokerDice {
     	if (hasStraight(4) == true) {
     		score += SMALL_STRAIGHT;
     	}
+		if (hasStraight(5) == true) {
+			score += SMALL_STRAIGHT;
+		}
     	nextRound();
     }
     
